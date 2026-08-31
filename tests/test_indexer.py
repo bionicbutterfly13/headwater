@@ -1,11 +1,11 @@
-"""Tests for d4_pageindex.indexer — VaultPageIndexer."""
+"""Tests for headwater.indexer — VaultPageIndexer."""
 
 from __future__ import annotations
 
 import pytest
 
-from d4_pageindex.indexer import VaultPageIndexer, _extract_raw_nodes, _build_tree
-from d4_pageindex.models import SectionChunk, TreeNode
+from headwater.indexer import VaultPageIndexer, _extract_raw_nodes, _build_tree
+from headwater.models import SectionChunk, TreeNode
 
 
 # ---------------------------------------------------------------------------

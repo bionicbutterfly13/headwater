@@ -1,10 +1,10 @@
-"""Tests for d4_pageindex.models — TreeNode and SectionChunk."""
+"""Tests for headwater.models — TreeNode and SectionChunk."""
 
 from __future__ import annotations
 
 import pytest
 
-from d4_pageindex.models import SectionChunk, TreeNode
+from headwater.models import SectionChunk, TreeNode
 
 
 # ---------------------------------------------------------------------------

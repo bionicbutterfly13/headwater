@@ -1,4 +1,4 @@
-"""Tests for d4_pageindex.manager — PageIndexManager."""
+"""Tests for headwater.manager — PageIndexManager."""
 
 from __future__ import annotations
 
@@ -8,13 +8,13 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from d4_pageindex.manager import (
+from headwater.manager import (
     PageIndexManager,
     get_pageindex_manager,
     reset_manager_singleton,
 )
-from d4_pageindex.models import SectionChunk, TreeNode
-from d4_pageindex.service import LocalPageIndexService
+from headwater.models import SectionChunk, TreeNode
+from headwater.service import LocalPageIndexService
 
 
 # ---------------------------------------------------------------------------

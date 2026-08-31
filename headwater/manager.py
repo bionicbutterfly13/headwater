@@ -1,14 +1,14 @@
 """
-d4_pageindex.manager
+headwater.manager
 ====================
 PageIndexManager — project-wide tree cache with JSON persistence.
 
 Adapted from D3 ``api/services/pageindex_manager.py``.
 
 Changes from D3:
-    - Uses :class:`~d4_pageindex.service.LocalPageIndexService` (local parsing)
+    - Uses :class:`~headwater.service.LocalPageIndexService` (local parsing)
       instead of D3's cloud PageIndexService.
-    - Tree persistence uses :class:`~d4_pageindex.models.TreeNode` serialisation
+    - Tree persistence uses :class:`~headwater.models.TreeNode` serialisation
       to JSON — no external format.
     - All async removed; the manager is fully synchronous.
     - No Pydantic, no D3 imports.
@@ -29,10 +29,10 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from d4_pageindex.models import TreeNode
-from d4_pageindex.service import LocalPageIndexService, get_local_pageindex_service
+from headwater.models import TreeNode
+from headwater.service import LocalPageIndexService, get_local_pageindex_service
 
-logger = logging.getLogger("d4_pageindex.manager")
+logger = logging.getLogger("headwater.manager")
 
 # Default location for persisted tree JSON files.
 _DEFAULT_CACHE_DIR = Path("data/pageindex")
@@ -51,7 +51,7 @@ class PageIndexManager:
     Args:
         cache_dir: Directory where JSON tree files are stored.  Created if it
                    does not exist.
-        service:   :class:`~d4_pageindex.service.LocalPageIndexService` to use.
+        service:   :class:`~headwater.service.LocalPageIndexService` to use.
                    Defaults to the module-level singleton.
         max_files: Maximum number of files to include when building a tree from
                    a directory (prevents runaway builds on large repos).
@@ -133,7 +133,7 @@ class PageIndexManager:
         json_path = self._json_path(key)
         if json_path.exists():
             json_path.unlink()
-            logger.debug("d4_pageindex.manager: invalidated disk cache for %s", key)
+            logger.debug("headwater.manager: invalidated disk cache for %s", key)
 
     # ------------------------------------------------------------------
     # Build helpers
@@ -170,7 +170,7 @@ class PageIndexManager:
         tree: tuple[TreeNode, ...] = result["tree"]
         self.put_tree(key, tree)
         logger.info(
-            "d4_pageindex.manager: built tree for %s (%d roots, %d sections)",
+            "headwater.manager: built tree for %s (%d roots, %d sections)",
             key,
             len(tree),
             result["section_count"],
@@ -202,7 +202,7 @@ class PageIndexManager:
         try:
             content = file_path.read_text(encoding="utf-8", errors="replace")
         except OSError as exc:
-            logger.error("d4_pageindex.manager: cannot read %s: %s", file_path, exc)
+            logger.error("headwater.manager: cannot read %s: %s", file_path, exc)
             return None
 
         return self.build_from_content(key, content, max_chars=max_chars, force=force)
@@ -242,7 +242,7 @@ class PageIndexManager:
 
         if not directory.exists():
             logger.warning(
-                "d4_pageindex.manager: directory not found: %s", directory
+                "headwater.manager: directory not found: %s", directory
             )
             return None
 
@@ -253,7 +253,7 @@ class PageIndexManager:
 
         if not files:
             logger.warning(
-                "d4_pageindex.manager: no matching files in %s", directory
+                "headwater.manager: no matching files in %s", directory
             )
             return None
 
@@ -263,11 +263,11 @@ class PageIndexManager:
             try:
                 parts.append(f"\n\n--- {rel} ---\n\n{f.read_text(encoding='utf-8', errors='replace')[:4000]}")
             except OSError as exc:
-                logger.debug("d4_pageindex.manager: skipping %s: %s", f, exc)
+                logger.debug("headwater.manager: skipping %s: %s", f, exc)
 
         content = "".join(parts)
         logger.info(
-            "d4_pageindex.manager: building directory tree for %s (%d files)",
+            "headwater.manager: building directory tree for %s (%d files)",
             key,
             len(files),
         )
@@ -292,7 +292,7 @@ class PageIndexManager:
             query: Search string (case-insensitive substring match).
 
         Returns:
-            List of :class:`~d4_pageindex.models.SectionChunk`.
+            List of :class:`~headwater.models.SectionChunk`.
 
         Example::
 
@@ -301,7 +301,7 @@ class PageIndexManager:
         tree = self.get_tree(key)
         if tree is None:
             logger.debug(
-                "d4_pageindex.manager: query for unknown key '%s'", key
+                "headwater.manager: query for unknown key '%s'", key
             )
             return []
         return self._service.query(tree, query, source_id=key)
@@ -325,10 +325,10 @@ class PageIndexManager:
                 json.dumps(payload, indent=2, ensure_ascii=False),
                 encoding="utf-8",
             )
-            logger.debug("d4_pageindex.manager: saved tree for %s", key)
+            logger.debug("headwater.manager: saved tree for %s", key)
         except OSError as exc:  # pragma: no cover
             logger.warning(
-                "d4_pageindex.manager: could not persist tree for %s: %s", key, exc
+                "headwater.manager: could not persist tree for %s: %s", key, exc
             )
 
     def _load_from_disk(self, key: str) -> tuple[TreeNode, ...] | None:
@@ -339,12 +339,12 @@ class PageIndexManager:
             raw = json.loads(json_path.read_text(encoding="utf-8"))
             roots = tuple(TreeNode.from_dict(r) for r in raw.get("roots", []))
             logger.debug(
-                "d4_pageindex.manager: loaded tree for %s from disk", key
+                "headwater.manager: loaded tree for %s from disk", key
             )
             return roots
         except (OSError, KeyError, json.JSONDecodeError) as exc:
             logger.warning(
-                "d4_pageindex.manager: could not load tree for %s: %s", key, exc
+                "headwater.manager: could not load tree for %s: %s", key, exc
             )
             return None
 

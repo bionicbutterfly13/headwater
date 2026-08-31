@@ -1,5 +1,5 @@
 """
-d4_pageindex.service
+headwater.service
 ====================
 LocalPageIndexService — synchronous query + chunk interface.
 
@@ -21,7 +21,7 @@ IO Map:
     Inlet:  ``index_content(content, max_chars)`` direct call.
     Processing: ``VaultPageIndexer.build_tree()`` + ``chunk_for_extraction()``.
     Outlet: ``IndexResult`` dict  |  optional bus events.
-    Host:   :class:`~d4_pageindex.manager.PageIndexManager`.
+    Host:   :class:`~headwater.manager.PageIndexManager`.
 """
 
 from __future__ import annotations
@@ -29,14 +29,14 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, Any
 
-from d4_pageindex.indexer import VaultPageIndexer
-from d4_pageindex.models import SectionChunk, TreeNode
+from headwater.indexer import VaultPageIndexer
+from headwater.models import SectionChunk, TreeNode
 
 if TYPE_CHECKING:
     # Imported only for type annotations — not a hard dependency.
     from d4_eventbus import AgentEvent, EventBus, EventType  # noqa: F401
 
-logger = logging.getLogger("d4_pageindex.service")
+logger = logging.getLogger("headwater.service")
 
 # ---------------------------------------------------------------------------
 # Event type constants
@@ -168,7 +168,7 @@ class LocalPageIndexService:
 
         self._maybe_emit_tree_built(source_id, tree, chunks)
         logger.debug(
-            "d4_pageindex: indexed %s — %d sections", source_id, len(chunks)
+            "headwater: indexed %s — %d sections", source_id, len(chunks)
         )
         return result
 
@@ -181,17 +181,17 @@ class LocalPageIndexService:
         """Search a pre-built tree for sections whose text matches *query*.
 
         Case-insensitive substring match.  Every matching node is returned
-        as a :class:`~d4_pageindex.models.SectionChunk`, with breadcrumb path
+        as a :class:`~headwater.models.SectionChunk`, with breadcrumb path
         preserved.
 
         Args:
             tree:      Root nodes from :meth:`index_content` or
-                       :meth:`~d4_pageindex.manager.PageIndexManager.get_tree`.
+                       :meth:`~headwater.manager.PageIndexManager.get_tree`.
             query:     Search string (case-insensitive).
             source_id: Identifier passed through to events.
 
         Returns:
-            List of :class:`~d4_pageindex.models.SectionChunk` whose text or
+            List of :class:`~headwater.models.SectionChunk` whose text or
             title contains *query*.
 
         Example::
@@ -207,7 +207,7 @@ class LocalPageIndexService:
         return matches
 
     def merge_results(self, results: list[dict[str, Any]]) -> dict[str, Any]:
-        """Delegate to :meth:`~d4_pageindex.indexer.VaultPageIndexer.merge_extraction_results`.
+        """Delegate to :meth:`~headwater.indexer.VaultPageIndexer.merge_extraction_results`.
 
         Convenience pass-through so callers need only import this service.
         """
@@ -232,7 +232,7 @@ class LocalPageIndexService:
                 "section_count": len(chunks),
                 "root_count": len(tree),
             },
-            source="d4_pageindex.service",
+            source="headwater.service",
             correlation_id=source_id,
         )
         if event is not None:
@@ -253,7 +253,7 @@ class LocalPageIndexService:
                 "query": query,
                 "match_count": len(matches),
             },
-            source="d4_pageindex.service",
+            source="headwater.service",
             correlation_id=source_id,
         )
         if event is not None:

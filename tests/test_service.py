@@ -1,4 +1,4 @@
-"""Tests for d4_pageindex.service — LocalPageIndexService."""
+"""Tests for headwater.service — LocalPageIndexService."""
 
 from __future__ import annotations
 
@@ -6,8 +6,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from d4_pageindex.models import SectionChunk, TreeNode
-from d4_pageindex.service import (
+from headwater.models import SectionChunk, TreeNode
+from headwater.service import (
     LocalPageIndexService,
     _search_nodes,
     get_local_pageindex_service,
@@ -103,7 +103,7 @@ class TestIndexContent:
         mock_bus = MagicMock()
         svc = LocalPageIndexService(bus=mock_bus)
         mock_event = MagicMock()
-        with patch("d4_pageindex.service._make_agent_event", return_value=mock_event):
+        with patch("headwater.service._make_agent_event", return_value=mock_event):
             svc.index_content(STRUCTURED_MD, source_id="doc.md")
         # publish_sync should have been called with the mock event
         mock_bus.publish_sync.assert_called_once_with(mock_event)
@@ -153,7 +153,7 @@ class TestQuery:
         mock_bus = MagicMock()
         svc = LocalPageIndexService(bus=mock_bus)
         mock_event = MagicMock()
-        with patch("d4_pageindex.service._make_agent_event", return_value=mock_event):
+        with patch("headwater.service._make_agent_event", return_value=mock_event):
             result = svc.index_content(STRUCTURED_MD)
             svc.query(result["tree"], "database")
         # publish_sync called at least once (for tree_built and query_complete)

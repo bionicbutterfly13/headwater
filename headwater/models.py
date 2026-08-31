@@ -1,7 +1,7 @@
 """
-d4_pageindex.models
+headwater.models
 ===================
-Immutable data structures for d4-pageindex.
+Immutable data structures for headwater.
 
 All entities are frozen dataclasses — no mutation anywhere.
 

@@ -1,24 +1,30 @@
-# d4-pageindex
+# headwater
 
-Vectorless RAG via markdown header parsing for Dionysus 4.
+> Formerly published as **d4-pageindex**.
+
+Vectorless RAG via markdown header parsing.
 
 Zero external dependencies. Optional `d4-eventbus` integration.
 
 ## Install
 
 ```bash
-pip install d4-pageindex
+pip install headwater
 # with event bus support:
-pip install "d4-pageindex[eventbus]"
+pip install "headwater[eventbus]"
 ```
 
 ## Quickstart
 
 ```python
-from d4_pageindex import VaultPageIndexer
+from headwater import VaultPageIndexer
 
 indexer = VaultPageIndexer()
 chunks = indexer.chunk_for_extraction(markdown_text)
 for chunk in chunks:
     print(chunk.path_string(), "—", len(chunk.text), "chars")
 ```
+
+## License
+
+Apache-2.0. See [LICENSE](LICENSE) and [NOTICE](NOTICE).

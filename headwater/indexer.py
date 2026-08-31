@@ -1,14 +1,14 @@
 """
-d4_pageindex.indexer
+headwater.indexer
 ====================
 VaultPageIndexer — markdown header tree builder.
 
 Adapted from D3 ``api/services/vault_pageindex.py``.
 
 Changes from D3:
-    - Returns :class:`~d4_pageindex.models.TreeNode` frozen dataclasses
+    - Returns :class:`~headwater.models.TreeNode` frozen dataclasses
       instead of raw mutable dicts.
-    - Returns :class:`~d4_pageindex.models.SectionChunk` with ``path`` as
+    - Returns :class:`~headwater.models.SectionChunk` with ``path`` as
       ``tuple[str, ...]`` instead of ``list[str]``.
     - No Pydantic, no D3 service imports.
     - ``merge_extraction_results`` kept for callers that post-process
@@ -18,7 +18,7 @@ IO Map:
     Inlet:  Raw markdown string.
     Processing: Regex header parse → tree build → leaf chunking.
     Outlet: ``tuple[TreeNode, ...]`` tree  |  ``list[SectionChunk]`` chunks.
-    Host:   :class:`~d4_pageindex.service.LocalPageIndexService`.
+    Host:   :class:`~headwater.service.LocalPageIndexService`.
 """
 
 from __future__ import annotations
@@ -26,7 +26,7 @@ from __future__ import annotations
 import re
 from typing import Any
 
-from d4_pageindex.models import SectionChunk, TreeNode
+from headwater.models import SectionChunk, TreeNode
 
 
 # ---------------------------------------------------------------------------
@@ -47,7 +47,7 @@ class VaultPageIndexer:
 
     Uses header-based parsing (no LLM required for indexing). The tree is
     built from markdown headers (``#`` through ``######``) and each section
-    can be retrieved as a :class:`~d4_pageindex.models.SectionChunk`.
+    can be retrieved as a :class:`~headwater.models.SectionChunk`.
 
     Example::
 
@@ -61,7 +61,7 @@ class VaultPageIndexer:
     # ------------------------------------------------------------------
 
     def build_tree(self, markdown_content: str) -> tuple[TreeNode, ...]:
-        """Build a tree of :class:`~d4_pageindex.models.TreeNode` from markdown.
+        """Build a tree of :class:`~headwater.models.TreeNode` from markdown.
 
         Respects fenced code blocks — headers inside triple-backtick blocks
         are not treated as structural headers.
@@ -70,7 +70,7 @@ class VaultPageIndexer:
             markdown_content: Raw markdown string.
 
         Returns:
-            Tuple of root-level :class:`~d4_pageindex.models.TreeNode` objects.
+            Tuple of root-level :class:`~headwater.models.TreeNode` objects.
             Empty tuple when the document has no headers.
 
         Example::
@@ -103,7 +103,7 @@ class VaultPageIndexer:
                        (~8 000 tokens at the 4-chars-per-token heuristic).
 
         Returns:
-            List of :class:`~d4_pageindex.models.SectionChunk`.
+            List of :class:`~headwater.models.SectionChunk`.
 
         Example::
 
